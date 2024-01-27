@@ -23,10 +23,18 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-Cypress.Commands.add('trelloLogin',(email,password)=>{
-    cy.get("#username").type(email)
-    cy.get("#login-submit").first().click()
-    cy.get("#password").type(password)
-    
-    cy.get("#login-submit").click()
+Cypress.Commands.add('trelloLogin',()=>{
+    cy.visit("https://trello.com/login")
+    cy.fixture("./example.json").then((data)=>{
+        cy.wait(1000)
+        cy.get("#user").type(data.email)
+        cy.get("#login").first().click()
+        cy.wait(4000)
+        const password = data.password
+        cy.origin('https://id.atlassian.com',{args:password}, (password) => {
+            cy.get("#password").type(password)
+            cy.get("#login-submit").click()
+            cy.wait(6000)
+    })
+})
 })
